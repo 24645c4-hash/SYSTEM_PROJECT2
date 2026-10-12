@@ -1,0 +1,34 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Sign in | MediManage{% endblock %}
+
+{% block content %}
+  <section style="display: flex; justify-content: center; padding: 52px 0 40px;">
+    <div class="auth-card">
+      <p class="eyebrow" style="margin-bottom: 10px;">Secure access</p>
+      <h1>Sign in to MediManage</h1>
+      <p style="margin: 0 0 20px; line-height: 1.5;">Use your clinic credentials to continue to your role-based workspace.</p>
+
+      {% if form.errors %}
+        <p role="alert" style="margin: 0 0 16px; padding: 10px 12px; background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; border-radius: 10px; font-weight: 600;">
+          Your username or password was not accepted.
+        </p>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+        <button type="submit" class="primary-link" style="border: 0; width: 100%; cursor: pointer; text-align: center;">
+          Sign in
+        </button>
+      </form>
+
+      <p style="margin: 18px 0 0; text-align: center;">
+        <a href="{% url 'authentication:password_reset' %}" style="color: #0f766e; text-decoration: none; font-weight: 600;">
+          Forgot your password?
+        </a>
+      </p>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Staff accounts | MediManage{% endblock %}
+
+{% block content %}
+  <section style="padding: 28px 0 32px;">
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:14px; margin-bottom:24px;">
+      <div>
+        <p style="margin:0 0 10px; color:#0f766e; text-transform:uppercase; letter-spacing:0.08em; font-size:0.74rem; font-weight:700;">Admin controls</p>
+        <h1 style="margin:0; font-size: clamp(2rem, 2.6vw, 2.8rem);">Staff accounts</h1>
+      </div>
+      <nav aria-label="Staff account navigation" style="display:flex; flex-wrap:wrap; gap:10px;">
+        <a href="{% url 'authentication:admin_dashboard' %}" class="secondary-link">Back to dashboard</a>
+        <a href="{% url 'authentication:staff_create' %}" class="secondary-link">Create staff</a>
+      </nav>
+    </div>
+
+    <section style="background:white; border:1px solid #dfeaf5; border-radius:18px; padding:24px; box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap;">
+        <h2 style="margin:0;">All staff</h2>
+        <span style="color:#516578; font-size:0.95rem;">{{ staff_users|length }} accounts</span>
+      </div>
+
+      {% if staff_users %}
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; min-width:760px;">
+            <thead>
+              <tr style="background:#f4f8fb; color:#11212f; text-align:left;">
+                <th style="padding:14px 12px; border-bottom:1px solid #e5edf5;">Name</th>
+                <th style="padding:14px 12px; border-bottom:1px solid #e5edf5;">Username</th>
+                <th style="padding:14px 12px; border-bottom:1px solid #e5edf5;">Role</th>
+                <th style="padding:14px 12px; border-bottom:1px solid #e5edf5;">Status</th>
+                <th style="padding:14px 12px; border-bottom:1px solid #e5edf5; text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for staff_user in staff_users %}
+                <tr>
+                  <td style="padding:14px 12px; border-bottom:1px solid #edf2f7; color:#11212f;">{{ staff_user.get_full_name|default:staff_user.username }}</td>
+                  <td style="padding:14px 12px; border-bottom:1px solid #edf2f7; color:#344b5f;">{{ staff_user.username }}</td>
+                  <td style="padding:14px 12px; border-bottom:1px solid #edf2f7; color:#344b5f;">
+                    {% if staff_user.staff_profile %}
+                      {{ staff_user.staff_profile.role }}
+                    {% else %}
+                      Staff
+                    {% endif %}
+                  </td>
+                  <td style="padding:14px 12px; border-bottom:1px solid #edf2f7;">
+                    {% if staff_user.is_active %}
+                      <span style="display:inline-block; padding:6px 10px; border-radius:999px; background:#e6f9f1; color:#0e7c5d; font-size:0.82rem; font-weight:700;">Active</span>
+                    {% else %}
+                      <span style="display:inline-block; padding:6px 10px; border-radius:999px; background:#fef3c7; color:#92400e; font-size:0.82rem; font-weight:700;">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td style="padding:14px 12px; border-bottom:1px solid #edf2f7; text-align:right;">
+                    <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap;">
+                      <form method="post" action="{% url 'authentication:staff_account_toggle' staff_user.pk %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="secondary-link" style="padding:8px 12px; border-radius:10px; border:1px solid #d8e5f2; background:#f7fafc; cursor:pointer; font-size:0.9rem;">
+                          {% if staff_user.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                      </form>
+                      <form method="post" action="{% url 'authentication:staff_account_delete' staff_user.pk %}" style="display:inline;" onsubmit="return confirm('Delete this staff account permanently?');">
+                        {% csrf_token %}
+                        <button type="submit" style="padding:8px 12px; border-radius:10px; border:1px solid #fecaca; background:#fff1f2; color:#991b1b; cursor:pointer; font-size:0.9rem;">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p style="margin:0; color:#516578;">No staff accounts found.</p>
+      {% endif %}
+    </section>
+  </section>
+{% endblock %}

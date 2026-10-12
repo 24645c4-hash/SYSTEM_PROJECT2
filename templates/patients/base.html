@@ -1,0 +1,14 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Patients | MediManage{% endblock %}
+
+{% block content %}
+  <nav aria-label="Patient navigation" style="display:flex; flex-wrap:wrap; gap:10px; margin: 18px 0 26px;">
+    <a href="{% url 'patients:list' %}" class="secondary-link">Patients</a>
+    {% if can_manage_patients %}
+      <a href="{% url 'patients:create' %}" class="secondary-link">Register patient</a>
+    {% endif %}
+    <a href="{% url 'authentication:role_redirect' %}" class="secondary-link">Back to MediManage</a>
+  </nav>
+  {% block patient_content %}{% endblock %}
+{% endblock %}

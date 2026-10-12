@@ -1,0 +1,1 @@
+"""Admin configuration for the reports application."""

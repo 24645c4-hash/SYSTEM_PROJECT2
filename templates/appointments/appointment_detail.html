@@ -1,0 +1,164 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Appointment detail | MediManage{% endblock %}
+
+{% block content %}
+  <style>
+    .appointment-shell {
+      background: #dfeaf1;
+      border: 1px solid #cfe0ec;
+      min-height: 540px;
+      padding: 26px 28px 18px;
+      box-sizing: border-box;
+    }
+    .appointment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .appointment-title {
+      margin: 0;
+      font-size: clamp(2.1rem, 4vw, 3.1rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #1e2d3b;
+      font-weight: 800;
+    }
+    .appointment-card {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);
+      padding: 28px;
+      margin-bottom: 22px;
+    }
+    .appointment-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .detail-box {
+      background: #f8fbff;
+      border: 1px solid #dfeaf5;
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .detail-label {
+      margin: 0 0 8px;
+      color: #516578;
+      font-weight: 700;
+    }
+    .detail-value {
+      margin: 0;
+      color: #1e2d3b;
+      line-height: 1.5;
+      font-size: 1.03rem;
+    }
+    .wide {
+      grid-column: 1 / -1;
+    }
+    .status-form {
+      display: grid;
+      gap: 12px;
+    }
+    .status-form p {
+      margin: 0;
+      display: grid;
+      gap: 8px;
+      color: #1e2d3b;
+    }
+    .status-form select,
+    .status-form input,
+    .status-form textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d3dfec;
+      border-radius: 12px;
+      background: #f8fbff;
+      color: #1e2d3b;
+      font: inherit;
+      box-sizing: border-box;
+    }
+    .status-form input:focus,
+    .status-form select:focus,
+    .status-form textarea:focus {
+      outline: 2px solid rgba(15, 118, 110, 0.15);
+      border-color: rgba(15, 118, 110, 0.5);
+    }
+    @media (max-width: 760px) {
+      .appointment-shell {
+        padding: 18px 16px 12px;
+      }
+      .appointment-card {
+        padding: 20px 16px;
+      }
+    }
+  </style>
+
+  <section class="appointment-shell" style="max-width: 900px; margin: 0 auto 32px;">
+    <div class="appointment-header">
+      <div>
+        <p class="eyebrow" style="margin-bottom: 10px;">Appointment</p>
+        <h1 class="appointment-title">Appointment detail</h1>
+      </div>
+      <a href="{% url 'appointments:list' %}" class="secondary-link">Back to appointments</a>
+    </div>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="message-list" style="margin-bottom: 22px;">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% if appointment.status == 'REQUESTED' %}
+      <div class="message-list" style="margin-bottom: 22px; background: #ecfeff; border-color: #a5f3fc; color: #115e59;">
+        <strong>Pending request:</strong> This appointment is waiting for a doctor assignment and time confirmation.
+      </div>
+    {% endif %}
+
+    <div class="appointment-card">
+      <div class="appointment-details">
+        <div class="detail-box">
+          <p class="detail-label">Patient</p>
+          <p class="detail-value">{{ appointment.patient.get_full_name }}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Doctor</p>
+          <p class="detail-value">{% if appointment.doctor %}{{ appointment.doctor }}{% else %}Pending doctor assignment{% endif %}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Scheduled</p>
+          <p class="detail-value">{% if appointment.scheduled_for %}{{ appointment.scheduled_for|date:"M d, Y H:i" }}{% else %}Pending scheduling{% endif %}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Status</p>
+          <p class="detail-value">{{ appointment.get_status_display }}</p>
+        </div>
+        <div class="detail-box wide">
+          <p class="detail-label">Reason</p>
+          <p class="detail-value">{{ appointment.reason|default:"-" }}</p>
+        </div>
+        <div class="detail-box wide">
+          <p class="detail-label">Notes</p>
+          <p class="detail-value">{{ appointment.notes|default:"-" }}</p>
+        </div>
+      </div>
+    </div>
+
+    {% if can_update_status %}
+      <div class="appointment-card" style="margin-bottom: 0;">
+        <h2 style="margin: 0 0 18px; color: #1e2d3b;">{% if appointment.status == 'REQUESTED' %}Acknowledge and schedule{% else %}Update status{% endif %}</h2>
+        <form method="post" action="{% url 'appointments:status_update' appointment.pk %}" class="status-form">
+          {% csrf_token %}
+          {{ status_form.as_p }}
+          <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+            <button type="submit" class="primary-link" style="border: none; cursor: pointer;">Update</button>
+          </div>
+        </form>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

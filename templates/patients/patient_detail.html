@@ -1,0 +1,221 @@
+{% extends "patients/base.html" %}
+
+{% block title %}{{ patient.get_full_name }} | MediManage{% endblock %}
+
+{% block patient_content %}
+  <style>
+    .profile-shell {
+      background: #dfeaf1;
+      border: 1px solid #cfe0ec;
+      min-height: 540px;
+      padding: 26px 28px 18px;
+      box-sizing: border-box;
+    }
+    .profile-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 8px 0 26px;
+    }
+    .profile-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 150px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid #bfd0de;
+      background: rgba(255,255,255,0.72);
+      color: #1c2b38;
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 500;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .profile-card {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);
+      padding: 28px;
+      margin-bottom: 22px;
+    }
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .profile-title {
+      margin: 0;
+      font-size: clamp(2.1rem, 4vw, 3.3rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #1e2d3b;
+      font-weight: 800;
+    }
+    .profile-section-label {
+      margin: 0 0 10px;
+      color: #0f766e;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-bottom: 10px;
+    }
+    .detail-box {
+      background: #f8fbff;
+      border: 1px solid #dfeaf5;
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .detail-label {
+      margin: 0 0 8px;
+      color: #516578;
+      font-weight: 700;
+    }
+    .detail-value {
+      margin: 0;
+      color: #1e2d3b;
+      line-height: 1.5;
+    }
+    .wide {
+      grid-column: 1 / -1;
+    }
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .action-btn,
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid #dfeaf5;
+      background: #fff;
+      color: #1e2d3b;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    @media (max-width: 760px) {
+      .profile-shell {
+        padding: 18px 16px 12px;
+      }
+      .profile-card {
+        padding: 20px 16px;
+      }
+      .action-row {
+        flex-direction: column;
+      }
+      .action-btn,
+      .action-link {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <section class="profile-shell" style="max-width: 1000px; margin: 0 auto 32px;">
+    <nav class="profile-topbar" aria-label="Patient navigation">
+      <a href="{% url 'patients:list' %}" class="profile-pill">Patients</a>
+      {% if can_manage_patients %}
+        <a href="{% url 'patients:create' %}" class="profile-pill">Register patient</a>
+      {% endif %}
+      <a href="{% url 'authentication:role_redirect' %}" class="profile-pill">Back to MediManage</a>
+    </nav>
+
+    <div class="profile-card">
+      <div class="profile-header">
+        <div>
+          <p class="profile-section-label">Patient profile</p>
+          <h1 class="profile-title">{{ patient.get_full_name }}</h1>
+        </div>
+        <a href="{% url 'patients:list' %}" class="action-link">Back to patients</a>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-box">
+          <p class="detail-label">Medical record number</p>
+          <p class="detail-value">{{ patient.medical_record_number }}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Status</p>
+          <p class="detail-value">{{ patient.get_status_display }}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Date of birth</p>
+          <p class="detail-value">{{ patient.date_of_birth|default:"Not provided" }}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Gender</p>
+          <p class="detail-value">{{ patient.get_gender_display|default:"Not provided" }}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Email</p>
+          <p class="detail-value">{{ patient.email|default:"Not provided" }}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Phone</p>
+          <p class="detail-value">{{ patient.phone|default:"Not provided" }}</p>
+        </div>
+        <div class="detail-box wide">
+          <p class="detail-label">Address</p>
+          <p class="detail-value">{{ patient.address|default:"Not provided" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <h2 style="margin: 0 0 16px; color: #1e2d3b;">Emergency contact</h2>
+      <div class="details-grid">
+        <div class="detail-box">
+          <p class="detail-label">Name</p>
+          <p class="detail-value">{{ patient.emergency_contact_name|default:"Not provided" }}</p>
+        </div>
+        <div class="detail-box">
+          <p class="detail-label">Phone</p>
+          <p class="detail-value">{{ patient.emergency_contact_phone|default:"Not provided" }}</p>
+        </div>
+      </div>
+    </div>
+
+    {% if can_manage_patients %}
+      <div class="profile-card" style="margin-bottom: 0;">
+        <h2 style="margin: 0 0 18px; color: #1e2d3b;">Management actions</h2>
+        <div class="action-row">
+          <a href="{% url 'patients:update' patient.pk %}" class="action-link">Edit profile</a>
+          {% if patient.user %}
+            <form method="post" action="{% url 'patients:resend_activation' patient.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="action-btn">Resend activation email</button>
+            </form>
+          {% elif patient.status == "ACTIVE" %}
+            <a href="{% url 'patients:activate_account' patient.pk %}" class="action-link">Create patient account</a>
+          {% endif %}
+          {% if patient.status == "ACTIVE" %}
+            <form method="post" action="{% url 'patients:deactivate' patient.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="action-btn">Deactivate patient</button>
+            </form>
+          {% endif %}
+          {% if patient.status != "ARCHIVED" %}
+            <form method="post" action="{% url 'patients:archive' patient.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="action-btn">Archive patient</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

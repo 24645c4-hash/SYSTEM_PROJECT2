@@ -1,0 +1,72 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Welcome | MediManage{% endblock %}
+
+{% block content %}
+  <section class="page-hero">
+    <p class="eyebrow">Role-based clinic management</p>
+    <h1 class="hero-title">Better patient care starts with a connected clinic.</h1>
+    <p class="hero-copy">Coordinate staff, appointments, records, queue flow, and reporting from one secure healthcare management workspace.</p>
+
+    <div class="hero-actions">
+      {% if user.is_authenticated %}
+        <a class="primary-link" href="{% url 'authentication:role_redirect' %}">Open dashboard</a>
+        <a class="secondary-link" href="{% url 'authentication:logout' %}">Log out</a>
+        {% if request.GET.role == 'receptionist' %}
+          <a class="secondary-link" href="{% url 'patients:create' %}">Create patient</a>
+        {% endif %}
+      {% else %}
+        <a class="primary-link" href="{% url 'authentication:login' %}">Sign in</a>
+        <a class="secondary-link" href="{% url 'authentication:role_redirect' %}">Open dashboard</a>
+        {% if request.GET.role == 'receptionist' %}
+          <a class="secondary-link" href="{% url 'patients:create' %}">Create patient</a>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    {% if request.GET.role %}
+      <p style="margin: 0; color: var(--muted); font-weight: 600;">
+        Signed in with the {{ request.GET.role }} role.
+      </p>
+    {% endif %}
+  </section>
+
+  {% if pending_requests and request.GET.role == 'receptionist' %}
+    <details style="margin-top: 24px;">
+      <summary style="display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 12px 18px; border-radius: 999px; background: var(--primary); color: white; font-weight: 700; list-style: none;">
+        Show requests
+      </summary>
+      <section style="margin-top: 12px;">
+        <div class="feature-card" style="padding: 22px;">
+          <h2 style="margin: 0 0 16px;">Pending requests</h2>
+          <ul style="list-style: none; margin: 0; padding: 0; display: grid; gap: 12px;">
+            {% for request in pending_requests %}
+              <li style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding: 14px 16px; background: #f8fbff; border: 1px solid #e1edf8; border-radius: 12px;">
+                <div>
+                  <strong style="display:block; margin-bottom:4px; color: #11212f;">{{ request.patient.get_full_name }}</strong>
+                  <span style="color: #516578;">{{ request.reason|default:"No reason provided" }}</span>
+                </div>
+                <a href="{% url 'appointments:detail' request.pk %}" class="primary-link" style="padding: 10px 16px; font-size: 0.9rem;">Schedule now</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+    </details>
+  {% endif %}
+
+  <section class="feature-grid">
+    <div class="feature-card">
+      <h2>Patient access</h2>
+      <p>Access personal records, appointments, and account updates in a protected portal.</p>
+    </div>
+    <div class="feature-card">
+      <h2>Clinical workflows</h2>
+      <p>Keep consultation notes, prescriptions, and queue tracking aligned for each clinician.</p>
+    </div>
+    <div class="feature-card">
+      <h2>Operational insights</h2>
+      <p>Monitor waitlists, appointment load, and audit activity from admin reporting views.</p>
+    </div>
+  </section>
+{% endblock %}

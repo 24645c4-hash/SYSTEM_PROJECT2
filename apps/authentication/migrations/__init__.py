@@ -1,0 +1,1 @@
+"""Database migrations for the authentication application."""

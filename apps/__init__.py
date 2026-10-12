@@ -1,0 +1,1 @@
+"""Django applications for MediManage will live in this package."""

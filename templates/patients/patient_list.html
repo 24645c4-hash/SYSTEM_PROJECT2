@@ -1,0 +1,240 @@
+{% extends "patients/base.html" %}
+
+{% block title %}Patient records | MediManage{% endblock %}
+
+{% block patient_content %}
+  <style>
+    .records-shell {
+      background: #dfeaf1;
+      border: 1px solid #cfe0ec;
+      border-radius: 0;
+      min-height: 530px;
+      padding: 26px 28px 18px;
+      box-sizing: border-box;
+    }
+    .records-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 8px 0 26px;
+    }
+    .records-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 150px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid #bfd0de;
+      background: rgba(255,255,255,0.72);
+      color: #1c2b38;
+      text-decoration: none;
+      font-size: 1.05rem;
+      font-weight: 500;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .records-panel {
+      margin-top: 8px;
+      padding-bottom: 24px;
+    }
+    .records-title {
+      margin: 0 0 20px;
+      font-size: clamp(2.3rem, 4vw, 4rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #1e2d3b;
+      font-weight: 800;
+    }
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .search-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: #1e2d3b;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    .search-field input,
+    .search-field select,
+    .records-button {
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid #b8c9d4;
+      background: rgba(255,255,255,0.72);
+      color: #1e2d3b;
+      font-size: 1rem;
+      box-sizing: border-box;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+    .search-field input {
+      width: 360px;
+      padding: 0 12px;
+    }
+    .search-field select {
+      width: 180px;
+      padding: 0 12px;
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #1e2d3b 50%), linear-gradient(135deg, #1e2d3b 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 30px;
+    }
+    .records-button {
+      padding: 0 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #edf7ff 100%);
+      cursor: pointer;
+      font-weight: 700;
+      color: #1c2b38;
+    }
+    .records-table-wrap {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);
+    }
+    .records-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+    .records-table th,
+    .records-table td {
+      text-align: left;
+      padding: 16px 18px;
+      border-bottom: 1px solid #e6edf4;
+      color: #1e2d3b;
+      vertical-align: middle;
+    }
+    .records-table thead th {
+      background: #f5f9fd;
+      color: #516578;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .records-table tbody tr:hover {
+      background: #f7fbff;
+    }
+    .records-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .records-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e6f7f3;
+      border: 1px solid #bfe9dd;
+      color: #0f766e;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .records-action {
+      color: #0f4c81;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .records-action:hover {
+      text-decoration: underline;
+    }
+    .records-empty {
+      margin: 0;
+      color: #2f3e4e;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      padding: 18px 0 0;
+    }
+    @media (max-width: 760px) {
+      .records-shell {
+        padding: 18px 16px 12px;
+      }
+      .search-field {
+        width: 100%;
+      }
+      .search-field input,
+      .search-field select {
+        width: 100%;
+      }
+      .records-button {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <div class="records-shell">
+    <nav class="records-topbar" aria-label="Patient navigation">
+      <a href="{% url 'patients:list' %}" class="records-pill">Patients</a>
+      {% if can_manage_patients %}
+        <a href="{% url 'patients:create' %}" class="records-pill">Register patient</a>
+      {% endif %}
+      <a href="{% url 'authentication:role_redirect' %}" class="records-pill">Back to MediManage</a>
+    </nav>
+
+    <div class="records-panel">
+      <h1 class="records-title">Patient records</h1>
+
+      <form method="get" class="search-row" aria-label="Search patient records">
+        <label class="search-field" for="patient-search">
+          <span>Search patients</span>
+          <input id="patient-search" type="search" name="q" value="{{ query }}" placeholder="Name, record number, phone, or email" />
+        </label>
+
+        <label class="search-field" for="patient-status">
+          <span>Status</span>
+          <select id="patient-status" name="status">
+            <option value="">All statuses</option>
+            {% for value, label in status_choices %}
+              <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <button type="submit" class="records-button">Search</button>
+      </form>
+
+      {% if patients %}
+        <div class="records-table-wrap">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Record number</th>
+                <th>Name</th>
+                <th>Date of birth</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for patient in patients %}
+                <tr>
+                  <td>{{ patient.medical_record_number }}</td>
+                  <td>{{ patient.get_full_name }}</td>
+                  <td>{{ patient.date_of_birth|default:"—" }}</td>
+                  <td>{{ patient.phone|default:"—" }}</td>
+                  <td><span class="records-status">{{ patient.get_status_display }}</span></td>
+                  <td><a href="{% url 'patients:detail' patient.pk %}" class="records-action">View</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="records-empty">No patient records matched your search.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

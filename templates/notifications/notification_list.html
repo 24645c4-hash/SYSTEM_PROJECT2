@@ -1,0 +1,36 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}My notifications | MediManage{% endblock %}
+
+{% block content %}
+  <nav aria-label="Notification navigation">
+    <a href="{% url 'authentication:role_redirect' %}">Back to MediManage</a>
+  </nav>
+
+  <h1>My notifications</h1>
+
+  {% if notifications %}
+    <ul>
+      {% for notification in notifications %}
+        <li id="{{ notification.id }}">
+          <strong>{{ notification.title }}</strong>
+          <span>{{ notification.created_at|date:"F j, Y g:i A" }}</span>
+          <p>{{ notification.message }}</p>
+          {% if notification.patient %}
+            <p><strong>Patient:</strong> {{ notification.patient.get_full_name }}</p>
+          {% endif %}
+          {% if not notification.is_read %}
+            <form method="post" action="{% url 'notifications:mark_read' notification.pk %}">
+              {% csrf_token %}
+              <button type="submit">Mark as read</button>
+            </form>
+          {% else %}
+            <p>Read on {{ notification.read_at|date:"F j, Y g:i A" }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have no notifications.</p>
+  {% endif %}
+{% endblock %}

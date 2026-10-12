@@ -1,0 +1,64 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Create staff | MediManage{% endblock %}
+
+{% block content %}
+  <section style="max-width: 760px; margin: 0 auto; padding: 28px 0 12px;">
+    <div class="auth-card" style="width: 100%; padding: 30px;">
+      <p class="eyebrow" style="margin-bottom: 10px;">Administration</p>
+      <h1 style="margin: 0 0 8px;">Create staff account</h1>
+      <p style="margin: 0 0 24px; color: var(--muted); line-height: 1.6;">Only administrators may create clinical staff accounts. Patient care accounts remain limited to administrators and receptionists.</p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div style="background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 14px; margin-bottom:16px; color:#9a4d00;">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
+          <div>
+            <label for="id_username" style="display:block; margin-bottom:8px; font-weight:700; color: var(--text);">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div style="color:#b42318; margin-top:6px;">{{ form.username.errors }}</div>{% endif %}
+          </div>
+          <div>
+            <label for="id_role" style="display:block; margin-bottom:8px; font-weight:700; color: var(--text);">Role</label>
+            {{ form.role }}
+            {% if form.role.errors %}<div style="color:#b42318; margin-top:6px;">{{ form.role.errors }}</div>{% endif %}
+          </div>
+          <div>
+            <label for="id_first_name" style="display:block; margin-bottom:8px; font-weight:700; color: var(--text);">First name</label>
+            {{ form.first_name }}
+          </div>
+          <div>
+            <label for="id_last_name" style="display:block; margin-bottom:8px; font-weight:700; color: var(--text);">Last name</label>
+            {{ form.last_name }}
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <label for="id_email" style="display:block; margin-bottom:8px; font-weight:700; color: var(--text);">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div style="color:#b42318; margin-top:6px;">{{ form.email.errors }}</div>{% endif %}
+          </div>
+          <div>
+            <label for="id_password1" style="display:block; margin-bottom:8px; font-weight:700; color: var(--text);">Password</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}<div style="color:#b42318; margin-top:6px;">{{ form.password1.errors }}</div>{% endif %}
+          </div>
+          <div>
+            <label for="id_password2" style="display:block; margin-bottom:8px; font-weight:700; color: var(--text);">Confirm password</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}<div style="color:#b42318; margin-top:6px;">{{ form.password2.errors }}</div>{% endif %}
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top:24px; gap:12px; flex-wrap:wrap;">
+          <a href="{% url 'authentication:admin_dashboard' %}" class="secondary-link">Cancel</a>
+          <button type="submit" class="primary-link" style="border:none; cursor:pointer;">Create staff account</button>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}

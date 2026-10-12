@@ -1,0 +1,132 @@
+"""URL configuration for the authentication application."""
+
+from django.contrib.auth import views as auth_views
+from django.urls import path
+
+from .views import (
+    MediManageLoginView,
+    MediManagePasswordChangeDoneView,
+    MediManagePasswordChangeView,
+    admin_dashboard,
+    administrator_access_check,
+    doctor_access_check,
+    doctor_dashboard,
+    medi_manage_logout,
+    patient_access_check,
+    patient_record_access_check,
+    receptionist_access_check,
+    role_redirect,
+    staff_account_delete,
+    staff_account_toggle,
+    staff_accounts,
+    staff_create,
+)
+
+app_name = "authentication"
+
+urlpatterns = [
+    path("login/", MediManageLoginView.as_view(), name="login"),
+    path(
+        "logout/",
+        medi_manage_logout,
+        name="logout",
+    ),
+    path("redirect/", role_redirect, name="role_redirect"),
+    path(
+        "access/admin/",
+        administrator_access_check,
+        name="administrator_access_check",
+    ),
+    path(
+        "access/receptionist/",
+        receptionist_access_check,
+        name="receptionist_access_check",
+    ),
+    path(
+        "access/doctor/",
+        doctor_access_check,
+        name="doctor_access_check",
+    ),
+    path(
+        "admin-dashboard/",
+        admin_dashboard,
+        name="admin_dashboard",
+    ),
+    path(
+        "staff/create/",
+        staff_create,
+        name="staff_create",
+    ),
+    path(
+        "staff/accounts/",
+        staff_accounts,
+        name="staff_accounts",
+    ),
+    path(
+        "staff/accounts/<int:user_id>/toggle/",
+        staff_account_toggle,
+        name="staff_account_toggle",
+    ),
+    path(
+        "staff/accounts/<int:user_id>/delete/",
+        staff_account_delete,
+        name="staff_account_delete",
+    ),
+    path(
+        "doctor-dashboard/",
+        doctor_dashboard,
+        name="doctor_dashboard",
+    ),
+    path(
+        "access/patient/",
+        patient_access_check,
+        name="patient_access_check",
+    ),
+    path(
+        "access/patient-record/<int:patient_user_id>/",
+        patient_record_access_check,
+        name="patient_record_access_check",
+    ),
+    path(
+        "password-change/",
+        MediManagePasswordChangeView.as_view(),
+        name="password_change",
+    ),
+    path(
+        "password-change/done/",
+        MediManagePasswordChangeDoneView.as_view(),
+        name="password_change_done",
+    ),
+    path(
+        "password-reset/",
+        auth_views.PasswordResetView.as_view(
+            template_name="authentication/password_reset_form.html",
+            email_template_name="authentication/password_reset_email.html",
+            subject_template_name="authentication/password_reset_subject.txt",
+            success_url="/auth/password-reset/done/",
+        ),
+        name="password_reset",
+    ),
+    path(
+        "password-reset/done/",
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="authentication/password_reset_done.html",
+        ),
+        name="password_reset_done",
+    ),
+    path(
+        "password-reset/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="authentication/password_reset_confirm.html",
+            success_url="/auth/password-reset/complete/",
+        ),
+        name="password_reset_confirm",
+    ),
+    path(
+        "password-reset/complete/",
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name="authentication/password_reset_complete.html",
+        ),
+        name="password_reset_complete",
+    ),
+]

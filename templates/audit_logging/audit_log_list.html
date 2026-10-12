@@ -1,0 +1,41 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Audit log | MediManage{% endblock %}
+
+{% block content %}
+  <section style="padding: 24px 0 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
+      <div>
+        <p class="eyebrow" style="margin-bottom: 10px;">Audit trail</p>
+        <h1 style="margin: 0;">Audit log</h1>
+      </div>
+      <nav aria-label="Audit navigation" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="{% url 'authentication:admin_dashboard' %}" class="secondary-link">Admin dashboard</a>
+        <a href="{% url 'reports:dashboard' %}" class="secondary-link">Reports</a>
+      </nav>
+    </div>
+
+    {% if logs %}
+      <div style="display:grid; gap:16px;">
+        {% for log in logs %}
+          <article id="{{ log.pk }}" class="auth-card" style="width: 100%; padding: 22px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
+              <strong style="font-size: 1.05rem; color: var(--text);">{{ log.action }}</strong>
+              <span style="color: var(--muted); font-size: 0.9rem;">{{ log.created_at|date:"M d, Y H:i" }}</span>
+            </div>
+            <p style="margin: 0 0 8px; color: var(--muted); line-height: 1.6;">{{ log.description }}</p>
+            <p style="margin: 0 0 6px;"><strong>Actor:</strong> {{ log.user|default:"system" }}</p>
+            {% if log.object_id %}
+              <p style="margin: 0;"><strong>Object:</strong> {{ log.object_id }}</p>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="auth-card" style="width: 100%; padding: 22px;">
+        <p style="margin: 0; color: var(--muted);">No audit events have been recorded.</p>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}
+

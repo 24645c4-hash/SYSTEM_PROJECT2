@@ -1,0 +1,129 @@
+{% extends "patients/base.html" %}
+
+{% block title %}{{ patient.get_full_name }} | Medical record{% endblock %}
+
+{% block patient_content %}
+  <section style="max-width: 1200px; margin: 0 auto 32px;">
+    <div class="auth-card" style="width: 100%; padding: 28px; margin-bottom: 22px; background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom: 18px;">
+        <div>
+          <p class="eyebrow" style="margin-bottom: 10px;">Medical record</p>
+          <h1 style="margin: 0; color: var(--text);">{{ patient.get_full_name }}</h1>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a href="{% url 'patients:detail' patient.pk %}" class="secondary-link">Back to patient profile</a>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
+        <div style="padding: 16px 18px; border-radius: 14px; background: #ecfeff; border: 1px solid #abf3f5;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Medical record number</p>
+          <p style="margin: 0; font-size: 1.05rem; color: var(--text);">{{ patient.medical_record_number }}</p>
+        </div>
+        <div style="padding: 16px 18px; border-radius: 14px; background: #f0fdf4; border: 1px solid #bbf7d0;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Status</p>
+          <p style="margin: 0; font-size: 1.05rem; color: var(--text);">{{ patient.get_status_display }}</p>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top: 20px;">
+        {% if can_document_patient %}
+          <a href="{% url 'medical_records:consultation_create' patient.pk %}" class="secondary-link">Add consultation</a>
+          <a href="{% url 'medical_records:prescription_create' patient.pk %}" class="secondary-link">Add prescription</a>
+          <a href="{% url 'medical_records:record_update' patient.pk %}" class="secondary-link">Update record summary</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="auth-card" style="width: 100%; padding: 28px; margin-bottom: 22px;">
+      <h2 style="margin-top: 0; margin-bottom: 18px;">Clinical summary</h2>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
+        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #f8fbff;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Blood type</p>
+          <p style="margin: 0;">{{ medical_record.blood_type|default:"Not recorded" }}</p>
+        </div>
+        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #f8fbff;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Allergies</p>
+          <p style="margin: 0;">{{ medical_record.allergies|default:"None reported" }}</p>
+        </div>
+        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #f8fbff;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Chronic conditions</p>
+          <p style="margin: 0;">{{ medical_record.chronic_conditions|default:"None reported" }}</p>
+        </div>
+        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #f8fbff;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Surgical history</p>
+          <p style="margin: 0;">{{ medical_record.surgical_history|default:"None reported" }}</p>
+        </div>
+        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #f8fbff;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Family history</p>
+          <p style="margin: 0;">{{ medical_record.family_history|default:"None reported" }}</p>
+        </div>
+        <div style="padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: #f8fbff; grid-column: 1 / -1;">
+          <p style="margin: 0 0 8px; color: var(--muted); font-weight: 700;">Notes</p>
+          <p style="margin: 0; line-height: 1.6;">{{ medical_record.notes|default:"No additional notes." }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-card" style="width: 100%; padding: 28px; margin-bottom: 22px;">
+      <h2 style="margin-top: 0; margin-bottom: 18px;">Care timeline</h2>
+      {% if care_timeline %}
+        <div style="display:grid; gap:16px;">
+          {% for event in care_timeline %}
+            <article style="padding: 18px; border: 1px solid var(--border); border-radius: 14px; background: #f8fbff;">
+              <p style="margin: 0 0 8px; color: var(--primary); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">{{ event.type }}</p>
+              <h3 style="margin: 0 0 10px; color: var(--text);">{{ event.title }}</h3>
+              <p style="margin: 0 0 8px; color: var(--muted);"><strong>Date:</strong> {{ event.date|date:"M d, Y" }}</p>
+              <p style="margin: 0; line-height: 1.6;">{{ event.summary }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="margin: 0; color: var(--muted);">No recent care activity recorded yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="auth-card" style="width: 100%; padding: 28px; margin-bottom: 22px;">
+      <h2 style="margin-top: 0; margin-bottom: 18px;">Recent consultations</h2>
+      {% if consultations %}
+        <div style="display:grid; gap:16px;">
+          {% for consultation in consultations %}
+            <article style="padding: 18px; border: 1px solid var(--border); border-radius: 14px; background: #f8fbff;">
+              <h3 style="margin: 0 0 10px; color: var(--text);">{{ consultation.consultation_date|date:"M d, Y" }}</h3>
+              <p style="margin: 0 0 8px;"><strong>Doctor:</strong> {{ consultation.doctor }}</p>
+              <p style="margin: 0 0 8px;"><strong>Chief complaint:</strong> {{ consultation.chief_complaint|default:"Not specified" }}</p>
+              <p style="margin: 0 0 8px;"><strong>Diagnosis:</strong> {{ consultation.diagnosis|default:"Not specified" }}</p>
+              <p style="margin: 0 0 8px;"><strong>Treatment:</strong> {{ consultation.treatment|default:"Not specified" }}</p>
+              <p style="margin: 0 0 8px;"><strong>Clinical notes:</strong> {{ consultation.clinical_notes|default:"No notes recorded." }}</p>
+              {% if consultation.follow_up_date %}
+                <p style="margin: 0;"><strong>Follow-up:</strong> {{ consultation.follow_up_date }}</p>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="margin: 0; color: var(--muted);">No consultations recorded yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="auth-card" style="width: 100%; padding: 28px;">
+      <h2 style="margin-top: 0; margin-bottom: 18px;">Active prescriptions</h2>
+      {% if prescriptions %}
+        <div style="display:grid; gap:16px;">
+          {% for prescription in prescriptions %}
+            <article style="padding: 18px; border: 1px solid var(--border); border-radius: 14px; background: #f8fbff;">
+              <h3 style="margin: 0 0 10px; color: var(--text);">{{ prescription.medication }}</h3>
+              <p style="margin: 0 0 8px;"><strong>Dosage:</strong> {{ prescription.dosage }}</p>
+              <p style="margin: 0 0 8px;"><strong>Instructions:</strong> {{ prescription.instructions }}</p>
+              <p style="margin: 0 0 8px;"><strong>Doctor:</strong> {{ prescription.doctor }}</p>
+              <p style="margin: 0;">{{ prescription.prescription_date }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="margin: 0; color: var(--muted);">No prescriptions recorded.</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
+

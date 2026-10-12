@@ -1,0 +1,53 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Clinic reports | MediManage{% endblock %}
+
+{% block content %}
+  <section style="padding: 24px 0 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
+      <div>
+        <p class="eyebrow" style="margin-bottom: 10px;">Reports</p>
+        <h1 style="margin: 0;">Clinic reports</h1>
+      </div>
+      <nav aria-label="Reports navigation" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="{% url 'authentication:admin_dashboard' %}" class="secondary-link">Admin dashboard</a>
+        <a href="{% url 'audit_logging:list' %}" class="secondary-link">Audit log</a>
+      </nav>
+    </div>
+
+    <section aria-label="Summary cards" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:18px; margin-bottom:26px;">
+      <div class="feature-card">
+        <h2>Patients</h2>
+        <p style="font-size: 2rem; font-weight: 700; color: var(--text); margin: 0;">{{ patient_total }}</p>
+      </div>
+      <div class="feature-card">
+        <h2>Appointments</h2>
+        <p style="font-size: 2rem; font-weight: 700; color: var(--text); margin: 0;">{{ appointment_total }}</p>
+      </div>
+      <div class="feature-card">
+        <h2>Waiting</h2>
+        <p style="font-size: 2rem; font-weight: 700; color: var(--text); margin: 0;">{{ waiting_total }}</p>
+      </div>
+    </section>
+
+    <div class="auth-card" style="width: 100%; padding: 26px;">
+      <h2 style="margin-top: 0; margin-bottom: 18px;">Recent activity</h2>
+      {% if recent_activity %}
+        <div style="display:grid; gap:16px;">
+          {% for event in recent_activity %}
+            <article style="padding:16px 18px; border:1px solid var(--border); border-radius:12px; background:#f8fbff;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px;">
+                <strong style="color: var(--text);">{{ event.action }}</strong>
+                <span style="color: var(--muted); font-size: 0.9rem;">{{ event.created_at|date:"M d, Y H:i" }}</span>
+              </div>
+              <p style="margin: 0; color: var(--muted); line-height: 1.6;">{{ event.description }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="margin: 0; color: var(--muted);">No activity recorded.</p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
+

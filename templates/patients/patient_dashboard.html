@@ -1,0 +1,314 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}My MediManage portal{% endblock %}
+
+{% block content %}
+  <style>
+    .portal-shell {
+      display: grid;
+      gap: 22px;
+      padding: 18px 0 10px;
+    }
+
+    .portal-hero {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 22px;
+      box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);
+      padding: 24px 26px;
+    }
+
+    .portal-hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .portal-eyebrow {
+      display: inline-block;
+      margin: 0;
+      color: #0f766e;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.74rem;
+    }
+
+    .portal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .portal-header h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 3.3rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #11212f;
+    }
+
+    .portal-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .portal-nav a,
+    .portal-nav button {
+      appearance: none;
+      border: 1px solid #d7e4f2;
+      background: #f8fbff;
+      color: #17324a;
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .portal-nav a:hover,
+    .portal-nav button:hover {
+      background: #ecfeff;
+      border-color: #a5f3fc;
+    }
+
+    .portal-subtitle {
+      margin: 12px 0 0;
+      color: #516578;
+      font-size: 1.06rem;
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-top: 12px;
+    }
+
+    .portal-stat {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(17, 33, 47, 0.04);
+      padding: 20px;
+    }
+
+    .portal-stat .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #0f766e;
+    }
+
+    .portal-stat .value {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 800;
+      color: #11212f;
+    }
+
+    .portal-card {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(17, 33, 47, 0.04);
+      padding: 22px;
+    }
+
+    .portal-card h2 {
+      margin: 0 0 18px;
+      font-size: 1.3rem;
+      color: #12273a;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px 18px;
+    }
+
+    .detail-item {
+      background: #f8fbff;
+      border: 1px solid #e1edf8;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .detail-item dt {
+      margin: 0 0 6px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #516578;
+      font-weight: 700;
+    }
+
+    .detail-item dd {
+      margin: 0;
+      color: #1b2d3d;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .list-item {
+      background: #f8fbff;
+      border: 1px solid #e1edf8;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .list-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #11212f;
+    }
+
+    .meta {
+      display: inline-block;
+      margin-bottom: 6px;
+      color: #0f766e;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .subtle {
+      color: #516578;
+      margin: 0;
+      line-height: 1.55;
+    }
+  </style>
+
+  <div class="portal-shell">
+    <section class="portal-hero" aria-label="Patient portal overview">
+      <div class="portal-hero-top">
+        <p class="portal-eyebrow">Patient portal</p>
+      </div>
+      <div class="portal-header">
+        <h1>Welcome, {{ patient.first_name }}</h1>
+        <nav class="portal-nav" aria-label="Patient portal actions">
+          <a href="{% url 'patients:detail' patient.pk %}">My profile</a>
+          <a href="{% url 'medical_records:patient_record' patient.pk %}">Medical record</a>
+          <a href="{% url 'appointments:request' %}">Request appointment</a>
+          <form method="post" action="{% url 'authentication:logout' %}" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit">Log out</button>
+          </form>
+        </nav>
+      </div>
+      <p class="portal-subtitle">This private portal contains your medical information, upcoming care, and important clinic updates in one secure place.</p>
+
+      <div class="portal-grid">
+        <div class="portal-stat">
+          <span class="label">Medical record</span>
+          <span class="value">{{ patient.medical_record_number }}</span>
+        </div>
+        <div class="portal-stat">
+          <span class="label">Appointments</span>
+          <span class="value">{{ appointments|length }}</span>
+        </div>
+        <div class="portal-stat">
+          <span class="label">Notifications</span>
+          <span class="value">{{ notifications|length }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="portal-card" aria-labelledby="profile-heading">
+      <h2 id="profile-heading">My profile</h2>
+      <dl class="detail-grid">
+        <div class="detail-item">
+          <dt>Full name</dt>
+          <dd>{{ patient.get_full_name }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Medical record number</dt>
+          <dd>{{ patient.medical_record_number }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Date of birth</dt>
+          <dd>{{ patient.date_of_birth|default:"Not provided" }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Gender</dt>
+          <dd>{{ patient.get_gender_display|default:"Not provided" }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Email</dt>
+          <dd>{{ patient.email|default:"Not provided" }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Phone</dt>
+          <dd>{{ patient.phone|default:"Not provided" }}</dd>
+        </div>
+        <div class="detail-item" style="grid-column: 1 / -1;">
+          <dt>Address</dt>
+          <dd>{{ patient.address|default:"Not provided" }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Emergency contact</dt>
+          <dd>{{ patient.emergency_contact_name|default:"Not provided" }}</dd>
+        </div>
+        <div class="detail-item">
+          <dt>Emergency contact phone</dt>
+          <dd>{{ patient.emergency_contact_phone|default:"Not provided" }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="portal-card" aria-labelledby="appointments-heading">
+      <h2 id="appointments-heading">My appointments</h2>
+      {% if appointments %}
+        <ul class="list">
+          {% for appointment in appointments %}
+            <li class="list-item">
+              <strong>{{ appointment.scheduled_for|date:"F j, Y g:i A" }}</strong>
+              <span class="meta">{{ appointment.get_status_display }}</span>
+              <p class="subtle">with {{ appointment.doctor }}{% if appointment.reason %} · {{ appointment.reason }}{% endif %}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="subtle">No appointments are available yet.</p>
+      {% endif %}
+    </section>
+
+    <section class="portal-card" aria-labelledby="notifications-heading">
+      <h2 id="notifications-heading">My notifications</h2>
+      {% if notifications %}
+        <ul class="list">
+          {% for notification in notifications %}
+            <li class="list-item">
+              <strong>{{ notification.title }}</strong>
+              <span class="meta">{{ notification.created_at|date:"F j, Y g:i A" }}</span>
+              <p class="subtle">{{ notification.message }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="subtle">You have no notifications.</p>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}

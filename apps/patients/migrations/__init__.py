@@ -1,0 +1,1 @@
+"""Database migrations for the patients application."""

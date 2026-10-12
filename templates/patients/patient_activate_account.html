@@ -1,0 +1,119 @@
+{% extends "patients/base.html" %}
+
+{% block title %}Create patient account | MediManage{% endblock %}
+
+{% block patient_content %}
+  <style>
+    .account-shell {
+      background: #dfeaf1;
+      border: 1px solid #cfe0ec;
+      min-height: 520px;
+      padding: 26px 28px 18px;
+      box-sizing: border-box;
+    }
+    .account-panel {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);
+      padding: 26px 28px;
+      max-width: 980px;
+    }
+    .account-title {
+      margin: 0 0 18px;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #1e2d3b;
+      font-weight: 800;
+    }
+    .account-copy {
+      margin: 0 0 16px;
+      color: #1e2d3b;
+      font-size: 1.08rem;
+      line-height: 1.65;
+    }
+    .account-copy strong {
+      color: #11212f;
+    }
+    .account-callout {
+      background: #f8fbff;
+      border: 1px solid #dfeaf5;
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #516578;
+      margin: 18px 0 22px;
+      line-height: 1.6;
+    }
+    .account-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 18px;
+    }
+    .error-box {
+      margin: 0 0 18px;
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 600;
+    }
+    .error-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    @media (max-width: 760px) {
+      .account-shell {
+        padding: 18px 16px 12px;
+      }
+      .account-panel {
+        padding: 20px 18px;
+      }
+      .account-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .account-form .primary-link,
+      .account-form .secondary-link {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+
+  <div class="account-shell">
+    <div class="account-panel">
+      <h1 class="account-title">Create patient account</h1>
+
+      <p class="account-copy">
+        Create a restricted login for <strong>{{ patient.get_full_name }}</strong>.
+        MediManage will email a temporary password to {{ patient.email|default:"the patient" }}.
+      </p>
+
+      <div class="account-callout">
+        The generated username and temporary password will be shown after the account is created,
+        and the patient will also receive them by email. They must choose a private permanent
+        password after signing in for the first time.
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="error-box" role="alert">
+          <ul>
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <form method="post" class="account-form">
+        {% csrf_token %}
+        <button type="submit" class="primary-link" style="border: 0; cursor: pointer;">Create account and send email</button>
+        <a href="{% url 'patients:detail' patient.pk %}" class="secondary-link">Cancel</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

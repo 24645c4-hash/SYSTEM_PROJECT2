@@ -1,0 +1,156 @@
+{% extends "patients/base.html" %}
+
+{% block title %}{% if is_edit %}Edit patient{% else %}Register patient{% endif %} | MediManage{% endblock %}
+
+{% block patient_content %}
+  <style>
+    .form-shell {
+      background: #dfeaf1;
+      border: 1px solid #cfe0ec;
+      min-height: 540px;
+      padding: 26px 28px 18px;
+      box-sizing: border-box;
+    }
+    .form-card {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #dfeaf5;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);
+      padding: 30px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .form-header {
+      margin-bottom: 18px;
+    }
+    .form-title {
+      margin: 0 0 8px;
+      font-size: clamp(2.1rem, 4vw, 3.1rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #1e2d3b;
+      font-weight: 800;
+    }
+    .form-subtitle {
+      margin: 0 0 24px;
+      color: #516578;
+      line-height: 1.6;
+      font-size: 1.03rem;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .form-field {
+      display: grid;
+      gap: 8px;
+    }
+    .form-field.wide {
+      grid-column: 1 / -1;
+    }
+    .form-field label {
+      font-weight: 700;
+      color: #1e2d3b;
+    }
+    .form-field input,
+    .form-field textarea,
+    .form-field select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d3dfec;
+      border-radius: 12px;
+      background: #f8fbff;
+      color: #1e2d3b;
+      font: inherit;
+      box-sizing: border-box;
+    }
+    .form-field textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+    .form-field input:focus,
+    .form-field textarea:focus,
+    .form-field select:focus {
+      outline: 2px solid rgba(15, 118, 110, 0.15);
+      border-color: rgba(15, 118, 110, 0.5);
+    }
+    .form-error {
+      color: #b42318;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .form-error-box {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      font-weight: 600;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .form-actions .secondary-link,
+    .form-actions button {
+      min-width: 140px;
+    }
+    @media (max-width: 760px) {
+      .form-shell {
+        padding: 18px 16px 12px;
+      }
+      .form-card {
+        padding: 20px 16px;
+      }
+      .form-actions {
+        flex-direction: column;
+      }
+      .form-actions .secondary-link,
+      .form-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <section class="form-shell" style="max-width: 900px; margin: 0 auto 32px;">
+    <div class="form-card">
+      <div class="form-header">
+        <p class="eyebrow" style="margin-bottom: 10px;">Patient management</p>
+        <h1 class="form-title">{% if is_edit %}Edit patient profile{% else %}Register patient{% endif %}</h1>
+      </div>
+      <p class="form-subtitle">Add a new patient record, update personal details, and keep the clinic information complete and ready for care.</p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="form-error-box">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <div class="form-grid">
+          {% for field in form %}
+            <div class="form-field {% if field.field.widget.input_type == 'textarea' or field.name == 'address' %}wide{% endif %}">
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <div class="form-error">{{ field.errors }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="form-actions">
+          <a href="{% if is_edit %}{% url 'patients:detail' patient.pk %}{% else %}{% url 'patients:list' %}{% endif %}" class="secondary-link">Cancel</a>
+          <button type="submit" class="primary-link" style="border: none; cursor: pointer;">{% if is_edit %}Save changes{% else %}Register patient{% endif %}</button>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endblock %}

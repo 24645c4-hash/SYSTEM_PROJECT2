@@ -1,0 +1,66 @@
+{% extends "authentication/base.html" %}
+
+{% block title %}Clinic overview | MediManage{% endblock %}
+
+{% block content %}
+  <section style="padding: 28px 0 10px;">
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px; margin-bottom:22px;">
+      <div>
+        <p style="margin:0 0 10px; color:#0f766e; text-transform:uppercase; letter-spacing:0.08em; font-size:0.74rem; font-weight:700;">Operations dashboard</p>
+        <h1 style="margin:0; font-size: clamp(2rem, 3vw, 3rem);">Clinic overview</h1>
+      </div>
+      <nav aria-label="Administration navigation" style="display:flex; flex-wrap:wrap; gap:10px;">
+        <a href="{% url 'authentication:role_redirect' %}" class="secondary-link">Back to MediManage</a>
+        <a href="{% url 'authentication:staff_create' %}" class="secondary-link">Create staff</a>
+        <a href="{% url 'authentication:staff_accounts' %}" class="secondary-link">Staff accounts</a>
+        <a href="{% url 'patients:create' %}" class="secondary-link">Create patient</a>
+        <a href="{% url 'patients:list' %}" class="secondary-link">Patients</a>
+        <a href="{% url 'appointments:list' %}" class="secondary-link">Appointments</a>
+        <a href="{% url 'reports:dashboard' %}" class="secondary-link">Reports</a>
+        <a href="{% url 'audit_logging:list' %}" class="secondary-link">Audit log</a>
+      </nav>
+    </div>
+
+    <section aria-label="Dashboard summary" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:18px; margin-bottom:28px;">
+      <div style="background:white; border:1px solid #dfeaf5; border-radius:16px; padding:20px; box-shadow: 0 10px 24px rgba(17, 33, 47, 0.04);">
+        <h2 style="margin:0 0 10px; font-size:1rem; color:#516578;">Patients</h2>
+        <p style="margin:0; font-size:2.2rem; font-weight:700; color:#11212f;">{{ total_patients }}</p>
+      </div>
+      <div style="background:white; border:1px solid #dfeaf5; border-radius:16px; padding:20px; box-shadow: 0 10px 24px rgba(17, 33, 47, 0.04);">
+        <h2 style="margin:0 0 10px; font-size:1rem; color:#516578;">Active patients</h2>
+        <p style="margin:0; font-size:2.2rem; font-weight:700; color:#11212f;">{{ active_patients }}</p>
+      </div>
+      <div style="background:white; border:1px solid #dfeaf5; border-radius:16px; padding:20px; box-shadow: 0 10px 24px rgba(17, 33, 47, 0.04);">
+        <h2 style="margin:0 0 10px; font-size:1rem; color:#516578;">Appointments today</h2>
+        <p style="margin:0; font-size:2.2rem; font-weight:700; color:#11212f;">{{ appointments_today }}</p>
+      </div>
+      <div style="background:white; border:1px solid #dfeaf5; border-radius:16px; padding:20px; box-shadow: 0 10px 24px rgba(17, 33, 47, 0.04);">
+        <h2 style="margin:0 0 10px; font-size:1rem; color:#516578;">Waiting in queue</h2>
+        <p style="margin:0; font-size:2.2rem; font-weight:700; color:#11212f;">{{ waiting_patients }}</p>
+      </div>
+      <div style="background:white; border:1px solid #dfeaf5; border-radius:16px; padding:20px; box-shadow: 0 10px 24px rgba(17, 33, 47, 0.04);">
+        <h2 style="margin:0 0 10px; font-size:1rem; color:#516578;">Active doctors</h2>
+        <p style="margin:0; font-size:2.2rem; font-weight:700; color:#11212f;">{{ active_doctors }}</p>
+      </div>
+    </section>
+
+    <section style="background:white; border:1px solid #dfeaf5; border-radius:18px; padding:24px; box-shadow: 0 12px 30px rgba(17, 33, 47, 0.04);">
+      <h2 style="margin-top:0; margin-bottom:18px;">Recent activity</h2>
+      {% if recent_activity %}
+        <ul style="list-style:none; padding:0; margin:0; display:grid; gap:14px;">
+          {% for event in recent_activity %}
+            <li style="padding:16px 18px; border:1px solid #edf2f7; border-radius:12px; background:#f8fbff;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+                <strong style="color:#11212f;">{{ event.action }}</strong>
+                <span style="color:#516578; font-size:0.9rem;">{{ event.created_at|date:"M d, Y H:i" }}</span>
+              </div>
+              <p style="margin:0; color:#344b5f; line-height:1.6;">{{ event.description }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p style="margin:0; color:#516578;">No activity has been recorded yet.</p>
+      {% endif %}
+    </section>
+  </section>
+{% endblock %}
